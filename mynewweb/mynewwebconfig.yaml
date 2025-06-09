@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: mynewweb
+    type: canary
+  name: mynewweb
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mynewweb
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mynewweb
+        type: canary
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources: {}
+        volumeMounts:
+        - name: configmap
+          mountPath: /var/lib/html
+        - name: conf
+          mountPath: /etc/nginx/conf.d
+      volumes:
+      - name: configmap
+        configMap:
+          name: myindex
+      - name: conf
+        configMap:
+          name: nginx-cm
+          items:
+          - key: nginx-custom-config.conf
+            path: default.conf
+status: {}

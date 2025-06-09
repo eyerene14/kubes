@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: test-sa
+  name: test-sa
+  namespace: test-ns
+spec:
+  replicas: 1 #tells dplyment to create 1 pod matching the pod template
+  selector:
+    matchLabels:
+      app: test-sa
+  strategy: 
+    type: Recreate
+  template: #create pods using pod definition
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: test-sa
+    spec:
+      serviceAccountName: test-sa #use the service account created in sa-create.yaml
+      containers:
+      - image: nginx
+        name: nginx
+        ports:
+        - containerPort: 80
+        resources: {}
+status: {}

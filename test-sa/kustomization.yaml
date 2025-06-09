@@ -1,0 +1,11 @@
+secretGenerator:
+  - name: my-secretPwd
+    literals:
+    - CLIENT_SECRET=passwordValue
+configMapGenerator:
+  - name: my-configMap
+    literals:
+    - CLIENT_ID=testcmValue
+resources:
+  - nginx-deployment.yaml
+  - sa-create.yaml
