@@ -1,0 +1,7 @@
+namespace: my-namespace
+resources:
+- deployment.yaml
+secretGenerator:
+- name: example-secret-1
+  files:
+  - secret-pwd.yaml

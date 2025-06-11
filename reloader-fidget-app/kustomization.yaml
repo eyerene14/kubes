@@ -1,0 +1,11 @@
+namespace: demo
+resources:
+- namespace.yaml
+- deployment.yaml
+# This file is used to generate ConfigMaps and Secrets for the reloader-fidget-app.
+configMapGenerator:
+- name: welcomecm
+  files:
+  - index.html
+generatorOptions:
+  disableNameSuffixHash: true

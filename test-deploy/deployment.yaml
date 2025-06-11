@@ -18,14 +18,22 @@ spec:
         app: testdeploy
     spec:
       containers:
-      - image: nginx
-        name: nginx
-        resources: {}
-        volumeMounts:
-        - name: testvolume
-          mountPath: /usr/share/nginx/html
+        - image: nginx
+          name: nginx
+          resources: {}
+          volumeMounts:
+            - name: testvolume
+              mountPath: /usr/share/nginx/html
+              volumeMounts:
+            - name: secretVolume
+              mountPath: "/app/config"
+              readOnly: true
       volumes:
-      - name: testvolume
-        configMap:
-          name: testcm
+        - name: testvolume
+          configMap:
+            name: myConfigMap
+        - name: secretVolume
+          secret:
+            secretName: example-secret-1
+            optional: false
 status: {}

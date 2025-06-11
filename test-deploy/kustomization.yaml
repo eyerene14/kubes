@@ -1,10 +1,17 @@
-secretGenerator:
-  - name: my-secretPwd
-    literals:
-    - password=passwordValue
-configMapGenerator:
-  - name: my-configMap
-    literals:
-    - testcm=testcmValue
 resources:
   - deployment.yaml
+
+secretGenerator:
+- name: example-secret-1
+  literals:
+  - username=admin
+  - password=passwordValue
+configMapGenerator:
+- name: myConfigMap
+  literals:
+  - testcm=testcmValue
+- name: example-configmap-1
+  files:
+  - index.html
+generatorOptions:
+  disableNameSuffixHash: true
