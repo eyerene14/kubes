@@ -4,5 +4,5 @@ resources:
   - deployment.yaml
   - myapp-ing.yaml
 
-patchesStrategicMerge:
-  - patch.yaml
+#patchesStrategicMerge:
+#  - patch.yaml

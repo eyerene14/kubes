@@ -1,27 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tests-reloader
+  name: demo-reloader
   annotations:
     reloader.stakater.com/auto: "true"
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tests-reloader
+      app: demo-reloader
   template:
     metadata:
       labels:
-        app: tests-reloader
+        app: demo-reloader
     spec:
+      serviceAccountName: demo-sa
       containers:
         - name: nginx
           image: nginx
           envFrom:
             - configMapRef:
                 name: welcomecm
-            #- secretRef:
-            #    name: secretuser
+            - secretRef:
+                name: secretpage
           env:
             - name: REQUESTS_CA_BUNDLE
               value: "/certs/allCAbundle.pem"
@@ -30,7 +31,17 @@ spec:
           volumeMounts:
             - name: configmap-volume
               mountPath: /usr/share/nginx/html/
+            - name: secrets-volume
+              mountPath: /var/lib/html/
       volumes:
+        - name: secrets-volume
+          secret:
+            secretName: secretpage
         - name: configmap-volume
           configMap:
             name: welcomecm
+            items:
+              - key: "welcome.html"
+                path: "welcome.html"
+              - key: "welcome.html"
+                path: "index.html"
