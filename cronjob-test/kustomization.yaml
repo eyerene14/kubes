@@ -1,0 +1,4 @@
+namespace: cron-test
+resources:
+  - namespace.yaml
+  - cron-example.yaml
