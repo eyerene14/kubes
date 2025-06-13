@@ -10,6 +10,9 @@ configMapGenerator:
 - name: welcomecm
   files:
   - welcome.html
+secretGenerator:
+- name: mysecret
+  files:
   - hello.html
 generatorOptions:
   disableNameSuffixHash: true

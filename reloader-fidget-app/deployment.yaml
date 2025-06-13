@@ -29,6 +29,9 @@ spec:
           volumeMounts:
             - name: configmap-volume
               mountPath: /usr/share/nginx/html/
+            - name: foo
+              mountPath: "/usr/share/nginx"
+              readOnly: true
       volumes:
         - name: configmap-volume
           configMap:
@@ -38,3 +41,10 @@ spec:
                 path: "welcome.html"
               - key: "welcome.html"
                 path: "index.html"
+        - name: foo
+          secret:
+            secretName: mysecret
+            defaultMode: 0400
+            items:
+              - key: hello.html
+                path: html/hello.html #The hello key from mysecret is available to the container at the path /etc/foo/my-group/my-username instead of at /etc/foo/username

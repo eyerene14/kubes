@@ -29,4 +29,15 @@ data:
 
       </html>
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: replacecm
+  namespace: demo
+data:
+  run.sh: |
+    #!/bin/bash
+    set -e
+    echo hello configmap > index.html
+---
 
