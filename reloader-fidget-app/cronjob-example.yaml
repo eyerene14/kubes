@@ -19,5 +19,5 @@ spec:
           - name: hello
             image: busybox:1.28
             imagePullPolicy: IfNotPresent
-            command: ["/bin/sh", "-c", "echo Hello from the Kubernetes cronjob! -- ${MY_POD_SERVICE_ACCOUNT}; ls -l"]
+            command: ["/bin/sh", "-c", "echo Hello from the Kubernetes cronjob! -- ${MY_POD_SERVICE_ACCOUNT}; ls -l ; echo 'ls -l /etc/nginx'; ls -l /etc/nginx; echo 'ls -l /usr/share/nginx/html'; ls -l /usr/share/nginx/html;"]
           restartPolicy: OnFailure
