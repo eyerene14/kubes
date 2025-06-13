@@ -19,8 +19,5 @@ spec:
           - name: hello
             image: busybox:1.28
             imagePullPolicy: IfNotPresent
-            command:
-            - /bin/sh
-            - -c
-            - date; echo Hello $MY_POD_SERVICE_ACCOUNT from the Kubernetes cluster
+            command: ["/bin/sh", "-c", "echo Hello from the Kubernetes cronjob!"]
           restartPolicy: OnFailure
