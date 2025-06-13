@@ -18,6 +18,12 @@ spec:
       containers:
         - name: nginx
           image: nginx
+          command:
+            [
+              "/bin/sh",
+              "-c",
+              "env; ls -l ; ls -l /usr/share/nginx/html/; ls -l /usr/share/nginx/html/secret",
+            ]
           envFrom:
             - configMapRef:
                 name: welcomecm
@@ -29,8 +35,8 @@ spec:
           volumeMounts:
             - name: configmap-volume
               mountPath: /usr/share/nginx/html/
-            - name: foo
-              mountPath: "/usr/share/nginx"
+            - name: secret-volume
+              mountPath: "/usr/share/nginx/html/secret"
               readOnly: true
       volumes:
         - name: configmap-volume
@@ -41,10 +47,10 @@ spec:
                 path: "welcome.html"
               - key: "welcome.html"
                 path: "index.html"
-        - name: foo
+        - name: secret-volume
           secret:
             secretName: mysecret
             defaultMode: 0400
-            items:
-              - key: hello.html
-                path: html/hello.html #The hello key from mysecret is available to the container at the path /etc/foo/my-group/my-username instead of at /etc/foo/username
+            #items:
+            #  - key: hello.html
+            #    path: index.html #The hello key from mysecret is available to the container at the path /etc/foo/my-group/my-username instead of at /etc/foo/username

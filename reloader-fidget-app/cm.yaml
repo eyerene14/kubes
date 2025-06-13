@@ -40,4 +40,14 @@ data:
     set -e
     echo hello configmap > index.html
 ---
-
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: locate_data
+  namespace: demo
+data:
+  run.sh: |
+    #!/bin/bash
+    set -ex
+    ls
+---
