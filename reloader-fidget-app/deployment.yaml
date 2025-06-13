@@ -21,8 +21,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: welcomecm
-            - secretRef:
-                name: secretpage
           env:
             - name: REQUESTS_CA_BUNDLE
               value: "/certs/allCAbundle.pem"
@@ -31,12 +29,7 @@ spec:
           volumeMounts:
             - name: configmap-volume
               mountPath: /usr/share/nginx/html/
-            - name: secrets-volume
-              mountPath: /var/lib/html/
       volumes:
-        - name: secrets-volume
-          secret:
-            secretName: secretpage
         - name: configmap-volume
           configMap:
             name: welcomecm

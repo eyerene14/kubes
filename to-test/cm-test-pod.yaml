@@ -1,0 +1,13 @@
+# source: https://github.com/sandervanvugt/kubernetes
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test1
+spec:
+  containers:
+  - name: test1
+    image: cirros
+    command: ["/bin/sh", "-c", "env"]
+    envFrom:
+      - configMapRef:
+          name: variables

@@ -1,0 +1,4 @@
+resources:
+  #- cm-test-pod.yaml
+  #- simpleshell.yaml
+  - cron-demo.yaml
