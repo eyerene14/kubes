@@ -1,0 +1,26 @@
+# Creates a cron job that runs every minute and prints the date and a message.
+# source: https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/
+# run: kubectl create -f https://k8s.io/examples/application/job/cronjob.yaml
+# ---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hello
+spec:
+  schedule: "*/2 * * * *" # Run every 2 minutes
+  suspend: false # Set to true to stop/pause the cron job
+  # concurrencyPolicy: -- set to 'Forbid' says if job is already running, when the next scheduled time arrives, the new job will be skipped
+  concurrencyPolicy: Forbid # or Allow, Replace 
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hello
+            image: busybox:1.28
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -c
+            - date; echo Hello $MY_POD_SERVICE_ACCOUNT from the Kubernetes cluster
+          restartPolicy: OnFailure

@@ -22,10 +22,10 @@ spec:
             - configMapRef:
                 name: welcomecm
           env:
-            - name: REQUESTS_CA_BUNDLE
-              value: "/certs/allCAbundle.pem"
-            - name: SSL_CERT_FILE
-              value: "/certs/allCAbundle.pem"
+            - name: MY_POD_SERVICE_ACCOUNT
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.serviceAccountName
           volumeMounts:
             - name: configmap-volume
               mountPath: /usr/share/nginx/html/
