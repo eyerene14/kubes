@@ -1,18 +1,18 @@
 namespace: demo
 resources:
-- namespace.yaml
-- deployment.yaml
-- sa.yaml
-- cronjob-example.yaml
+  - namespace.yaml
+  - deployment.yaml
+  - sa.yaml
+  - cronjob-example.yaml
+  - secret.yaml
 
 # This file is used to generate ConfigMaps and Secrets for the reloader-fidget-app.
 configMapGenerator:
-- name: welcomecm
-  files:
-  - welcome.html
-secretGenerator:
-- name: nginx-secret-config
-  files:
-  - nginx-custom-config.conf
+  - name: welcomecm
+    files:
+      - welcome.html
+      - hello.html
 generatorOptions:
   disableNameSuffixHash: true
+#patchesStrategicMerge:
+#  - patch.yaml
