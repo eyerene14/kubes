@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: welcomecm
+  name: demo-cm
   namespace: demo
 data:
-  welcome.html: |
+  hello.html: |
     <!doctype html>
       <html lang="en">
       <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
