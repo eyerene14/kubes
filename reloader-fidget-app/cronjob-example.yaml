@@ -6,18 +6,31 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: hello
+  namespace: demo
 spec:
   schedule: "*/2 * * * *" # Run every 2 minutes
   suspend: false # Set to true to stop/pause the cron job
   # concurrencyPolicy: -- set to 'Forbid' says if job is already running, when the next scheduled time arrives, the new job will be skipped
-  concurrencyPolicy: Forbid # or Allow, Replace 
+  concurrencyPolicy: Forbid # or Allow, Replace
   jobTemplate:
     spec:
       template:
         spec:
           containers:
-          - name: hello
-            image: busybox:1.28
-            imagePullPolicy: IfNotPresent
-            command: ["/bin/sh", "-c", "echo Hello from the Kubernetes cronjob! -- ${MY_POD_SERVICE_ACCOUNT}; ls -l ; env"]
+            - name: hello
+              image: busybox:1.28
+              imagePullPolicy: IfNotPresent
+              command:
+                [
+                  "/bin/sh",
+                  "-c",
+                  "echo Hello from the Kubernetes cronjob! -- ${MY_POD_SERVICE_ACCOUNT}; ls -l ; env; ls -la /usr/share/nginx/html",
+                ]
+              volumeMounts:
+                - name: pvc-volume
+                  mountPath: /usr/share/nginx/html/
+          volumes:
+            - name: pvc-volume
+              persistentVolumeClaim:
+                claimName: local-pv-claim
           restartPolicy: OnFailure

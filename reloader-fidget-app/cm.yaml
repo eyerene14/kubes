@@ -7,7 +7,7 @@ data:
   welcome.html: |
     <!doctype html>
       <html lang="en">
-      <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+      <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
 
       <head>
         <title>Welcome to SEC!</title>
@@ -18,11 +18,11 @@ data:
       <body>
         <main>
           <div class="px-4 py-3 my-2 text-center">
-            <h1 class="display-6 fw-bold">Hello "${MY_POD_SERVICE_ACCOUNT}"</h1>
+            <h1 class="display-6 fw-bold">Hello ISK!</h1>
             <p class="fs-5">
-              It is nice to meet you!
+              I've updated the configMap!
             </p>
-            <a href="index.html" class="btn btn-primary btn-lg px-4 gap-3">Back home</a>
+            <a href="/" class="btn btn-primary btn-lg px-4 gap-3">Back home</a>
           </div>
         </main>
       </body>

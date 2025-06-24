@@ -4,6 +4,7 @@ resources:
   - deployment.yaml
   - sa.yaml
   - cronjob-example.yaml
+  - pvc.yaml
   #- cm.yaml
 
 # This file is used to generate ConfigMaps and Secrets for the reloader-fidget-app.
@@ -11,6 +12,7 @@ configMapGenerator:
   - name: welcomecm
     files:
       - welcome.html
+      - hello.html
 secretGenerator:
   - name: nginx-secret-config
     files:

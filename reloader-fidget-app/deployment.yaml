@@ -23,8 +23,6 @@ spec:
                 name: welcomecm
             - secretRef:
                 name: nginx-secret-config
-            - configMapRef:
-                name: demo-cm
           env:
             - name: MY_POD_SERVICE_ACCOUNT
               valueFrom:
@@ -32,20 +30,18 @@ spec:
                   fieldPath: spec.serviceAccountName
           volumeMounts:
             - name: configmap-volume
-              mountPath: /usr/share/nginx/html/              
+              mountPath: /usr/share/nginx/html
             - name: nginx-config-volume
               mountPath: /etc/nginx/conf.d
-            - name: other-configmap-volume
-              mountPath: /usr/share/nginx/html/hello
       volumes:
         - name: configmap-volume
           configMap:
             name: welcomecm
             items:
-              - key: "welcome.html"
-                path: "welcome.html"
-              #- key: "welcome.html"
-              #  path: "index.html"
+            - key: "welcome.html"
+              path: "index.html"
+            - key: "hello.html"
+              path: "hello.html"
         - name: nginx-config-volume
           secret:
             secretName: nginx-secret-config
@@ -53,6 +49,3 @@ spec:
             items:
               - key: nginx-custom-config.conf
                 path: "default.conf"
-        - name: other-configmap-volume
-          configMap:
-            name: demo-cm
