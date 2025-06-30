@@ -20,7 +20,7 @@ spec:
           image: nginx
           envFrom:
             - configMapRef:
-                name: welcomecm
+                name: webcontent-cm
             - secretRef:
                 name: nginx-secret-config
           env:
@@ -36,7 +36,7 @@ spec:
       volumes:
         - name: configmap-volume
           configMap:
-            name: welcomecm
+            name: webcontent-cm
             #items:
             #- key: "welcome.html"
             #  path: "index.html"

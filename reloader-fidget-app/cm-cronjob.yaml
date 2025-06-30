@@ -1,0 +1,39 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: get-cm-secret-cj
+  namespace: demo
+spec:
+  #schedule: "0 0 * * *" # Run daily at midnight
+  schedule: "*/2 * * * *" # Run every 2 minutes
+  suspend: false # Set to true to stop/pause the cron job
+  concurrencyPolicy: Forbid # or Allow, Replace
+  # This cron job runs a job that retrieves a ConfigMap and Secret, modifies them,
+  # and updates or creates them as necessary.
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - image: alpine
+            imagePullPolicy: IfNotPresent
+            name: get-cm-secret-cj
+            envFrom:
+              - secretRef:
+                  name: splunk-secrets
+            command:
+            - /bin/sh
+            - -c
+            - /shared/modify-webcontent.sh
+            volumeMounts:
+              - name: get-token-volume
+                mountPath: "/shared/modify-webcontent.sh"
+                subPath: modify-webcontent.sh
+          serviceAccountName: demo-sa
+          volumes:
+            - name: get-token-volume
+              configMap:
+                name: rotate-secret-shell-script
+                defaultMode: 0777
+          restartPolicy: Never

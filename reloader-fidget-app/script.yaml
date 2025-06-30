@@ -3,9 +3,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: rotate-secret-shell-script
-  namespace: flux-system
+  namespace: demo
 data:
-  get-token.sh: |
+  modify-webcontent.sh: |
     apk --no-cache add curl jq
 
     # Kubernetes API
@@ -15,39 +15,50 @@ data:
     TOKEN=$(cat ${SERVICEACCOUNT}/token)
     CACERT=${SERVICEACCOUNT}/ca.crt
 
-    # SignalFX
-    REALM=us1
-    SECRET_NAME=sfx-auth-token
+    # ConfigMap
+    CM_NAME=webcontent-cm
 
-    # Retrieve session token
-    accessToken=$(curl --insecure -s -X POST "https://api.${REALM}.signalfx.com/v2/session" \
-    -H "Content-Type: application/json" \
-    -H "X-SF-Token: ${X_SF_TOKEN}" \
-    -d '{
-            "email": "'${EMAIL}'",
-            "password": "'${PASSWORD}'"
-        }' | jq -r ".accessToken")
+    export cm_response=$(curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api/v1/namespaces/${NAMESPACE}/configmaps/${CM_NAME})
+    #echo $cm_response
 
-    encoded_token=$(echo -n $accessToken | base64)
+    cm_code=$(echo $cm_response | jq -r ".code")
 
-    secret_response=$(curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api/v1/namespaces/${NAMESPACE}/secrets/${SECRET_NAME})
-    echo $secret_response
+    echo '$cm_response' keys ...:
+    echo $cm_response | jq -r '. | keys'
 
-    code=$(echo $secret_response | jq -r ".code")
+    echo '$cm_response' .data START...:
+    cm_data=$(echo $cm_response | jq -r '.data')
+    #echo $cm_data
+    echo '$cm_response' .data END...:
 
-    payload='{"metadata": {"name": "'${SECRET_NAME}'", "namespace": "'${NAMESPACE}'"}, "data": {"sfx_auth_token": "'${encoded_token}'"}}'
+    echo '$cm_response'.data keys START...:
+    echo $cm_data | jq -r '. | keys'
+    echo '$cm_response'.data keys END...:
 
-    echo $payload
+    echo '$cm_hello' .data.["hello.html"] START...:
+    cm_hello=$(echo $cm_data | jq -r '.["hello.html"]')
+    echo $cm_hello
+    echo '$cm_hello' .data.["hello.html"] END...:
 
-    if [ $code -eq 404 ]; then
-      echo Creating Secret
-      curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X POST ${APISERVER}/api/v1/namespaces/${NAMESPACE}/secrets \
+    echo '$cm_welcome' .data.["welcome.html"] START...:
+    cm_welcome=$(echo $cm_data | jq -r '.["welcome.html"]')
+    echo $cm_welcome
+    echo '$cm_welcome' .data.["welcome.html"] END...:
+
+    cm_payload='{"metadata": {"name": "'${CM_NAME}'", "namespace": "'${NAMESPACE}'"}, "data": {"cm_response": "'${cm_response}'"}}'
+
+    #echo $cm_payload
+
+    if [ $cm_code -eq 404 ]; then
+      #echo Creating ConfigMap: ${CM_NAME}
+      curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X POST ${APISERVER}/api/v1/namespaces/${NAMESPACE}/configmaps \
       -H "Content-Type: application/json" \
-      -d "${payload}"
+      -d "${cm_payload}"
     else
-      # Update secret with encoded session token
-      echo Updating Secret
-      curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X PUT ${APISERVER}/api/v1/namespaces/${NAMESPACE}/secrets/${SECRET_NAME} \
-      -H "Content-Type: application/json" \
-      -d "${payload}"
+      # Update ConfigMap with encoded session token
+      #echo Updating ConfigMap: ${CM_NAME}
+      #echo ${CM_NAME} ... "${cm_payload}"
+      #curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X #PUT ${APISERVER}/api/v1/namespaces/${NAMESPACE}/configmaps/${CM_NAME} \
+      #-H "Content-Type: application/json" \
+      #-d "${cm_payload}"
     fi
