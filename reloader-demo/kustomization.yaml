@@ -1,7 +1,7 @@
 namespace: demo
 resources:
   - namespace.yaml
-  #- deployment.yaml
+  - deployment.yaml
   - sa.yaml
   #- cm-cronjob.yaml
   - script.yaml
