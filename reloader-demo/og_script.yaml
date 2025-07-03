@@ -1,0 +1,53 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rotate-secret-shell-script
+  namespace: flux-system
+data:
+  get-token.sh: |
+    apk --no-cache add curl jq
+
+    # Kubernetes API
+    APISERVER=https://kubernetes.default.svc
+    SERVICEACCOUNT=/var/run/secrets/kubernetes.io/serviceaccount
+    NAMESPACE=$(cat ${SERVICEACCOUNT}/namespace)
+    TOKEN=$(cat ${SERVICEACCOUNT}/token)
+    CACERT=${SERVICEACCOUNT}/ca.crt
+
+    # SignalFX
+    REALM=us1
+    SECRET_NAME=sfx-auth-token
+
+    # Retrieve session token
+    accessToken=$(curl --insecure -s -X POST "https://api.${REALM}.signalfx.com/v2/session" \
+    -H "Content-Type: application/json" \
+    -H "X-SF-Token: ${X_SF_TOKEN}" \
+    -d '{
+            "email": "'${EMAIL}'",
+            "password": "'${PASSWORD}'"
+        }' | jq -r ".accessToken")
+
+    encoded_token=$(echo -n $accessToken | base64)
+
+    secret_response=$(curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api/v1/namespaces/${NAMESPACE}/secrets/${SECRET_NAME})
+    echo $secret_response
+
+    code=$(echo $secret_response | jq -r ".code")
+
+    payload='{"metadata": {"name": "'${SECRET_NAME}'", "namespace": "'${NAMESPACE}'"}, "data": {"sfx_auth_token": "'${encoded_token}'"}}'
+
+    echo $payload
+
+    if [ $code -eq 404 ]; then
+      echo Creating Secret
+      curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X POST ${APISERVER}/api/v1/namespaces/${NAMESPACE}/secrets \
+      -H "Content-Type: application/json" \
+      -d "${payload}"
+    else
+      # Update secret with encoded session token
+      echo Updating Secret
+      curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X PUT ${APISERVER}/api/v1/namespaces/${NAMESPACE}/secrets/${SECRET_NAME} \
+      -H "Content-Type: application/json" \
+      -d "${payload}"
+    fi

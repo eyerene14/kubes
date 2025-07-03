@@ -61,8 +61,10 @@ data:
 
           <div class="col-md-6 mx-auto text-center">
             <label for="timeCreated" class="form-label fw-bold fs-5" id="timeCreated">Page created: <span id="timeCreatedValue"></span></label>
+          </div>
+          <div class="col-md-6 mx-auto text-center">
             <label for="timeUpdated" class="form-label fw-bold fs-5" id="timeUpdated">Page last updated: <span id="timeUpdatedValue"></span></label>
-            </div>
+          </div>
 
           <div class="d-grid gap-2 d-sm-flex justify-content-sm-center my-2">
             <a href="/index.html" class="btn btn-primary btn-lg px-4 gap-3">Back home</a>

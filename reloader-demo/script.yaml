@@ -6,7 +6,29 @@ metadata:
   namespace: demo
 data:
   modify-webcontent.sh: |
+    #!/bin/sh
+    #set -x
     apk --no-cache add curl jq
+
+    # Execute the Bash script embedded as a heredoc
+    function delay_script() {
+      COUNTER=10 # 180 = 3 minutes in seconds
+      COUNTER=$(( $COUNTER * 60 ))
+
+      echo "Starting break for $COUNTER seconds ..."
+
+      while [ $COUNTER -gt 0 ]
+      do
+        echo $COUNTER seconds remaining in break
+        COUNTER=$(( COUNTER - 1 ))
+        sleep 1
+      done
+    }
+
+    echo "Waiting for 3 minutes before running the script ..."
+    echo "Start time: " $(date)
+    #delay_script
+    echo "End time: " $(date)
 
     # Kubernetes API
     APISERVER=https://kubernetes.default.svc
@@ -25,28 +47,52 @@ data:
     echo '$cm_response' keys ...:
     echo $cm_response | jq -r '. | keys'
 
-    echo '$cm_response' metadata START...:
+    echo Setting configMap metadata to vars ...
     metadata=$(echo $cm_response | jq '.metadata')
     createdTime=$(echo $metadata | jq -r '.creationTimestamp')
     updatedTime=$(echo $metadata | jq -r '.managedFields[0].time')
-    echo '$cm_response' metadata END...:
+    echo '$createdTime:' $createdTime
+    echo '$updatedTime:' $updatedTime
+    echo Setting configMap metadata to vars END...:
 
-    echo '$cm_response'.data START...:
-    cm_data=$(echo $cm_response | jq -r '.data')
-    cm_hello=$(echo $cm_data | jq -r '.["hello.html"]')
-    cm_welcome=$(echo $cm_data | jq -r '.["welcome.html"]')
-    echo '$cm_response'.data END...:
+    echo "Adding createdTime and updatedTime to HTML file ..."
+    temp_file=$(mktemp)
+    echo $cm_response | jq -r '.data' > $temp_file
+    updatedTime='2025-07-03T21:34:42Z'
+    createdTime='2025-07-03T21:58:40Z'
+    updatedTime='2025-07-03T21:58:40Z'
+    sed -i 's/timeUpdatedValue\\">[^<]*</timeUpdatedValue\\">'"$updatedTime"'</g' $temp_file
+    sed -i 's/timeCreatedValue\\">[^<]*</timeCreatedValue\\">'"$createdTime"'</g' $temp_file
 
-    cm_payload='{"metadata": {"name": "'${CM_NAME}'", "namespace": "'${NAMESPACE}'"}, "data": {"hello.html": "'${cm_hello}'", "welcome.html": "'${cm_welcome}'"}}'
+    new_cm=$(cat $temp_file)
 
-    #echo $cm_payload
+    delay_script
 
-    if [ $cm_code -eq 404 ]; then
+    #cm_data=$(echo $cm_response | jq -r '.data')
+    #cm_hello=$(echo $cm_data | jq -r '.["hello.html"]')
+    #updated_cm="${cm_data/timeCreatedValue\">/timeCreatedValue">"$createdTime"}"
+    #new_cm="${updated_cm/timeUpdatedValue\">/timeUpdatedValue">"$updatedTime"}"
+    #echo Setting configMap data to vars END...:
+
+    echo $new_cm | grep 'timeUpdatedValue\"><'
+
+    #payload='{"metadata": {"name": "'${SECRET_NAME}'", "namespace": "'${NAMESPACE}'"}, "data": {"sfx_auth_token": "'${encoded_token}'"}}'
+
+    if ! $(echo $new_cm | grep 'timeUpdatedValue\\">') &> /dev/null
+    then 
+      $(echo $new_cm | grep 'timeUpdatedValue')
+      echo "hello.html timeUpdatedValue was not populated" >&2
+      exit 1
+    fi
+
+    cm_payload='{"metadata": {"name": "'${CM_NAME}'", "namespace": "'${NAMESPACE}'"}, "data": '"${new_cm}"'}'
+
+    function create_configmap() {
       echo Creating ConfigMap: ${CM_NAME}
       curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X POST ${APISERVER}/api/v1/namespaces/${NAMESPACE}/configmaps \
       -H "Content-Type: application/json" \
       -d "${cm_payload}"
-    fi
+    }
 
     function update_configmap() {
       # Update ConfigMap with encoded session token
@@ -56,3 +102,9 @@ data:
       -H "Content-Type: application/json" \
       -d "${cm_payload}"
     }
+
+    #if [ $cm_code -eq 404 ]; then
+    #  #create_configmap
+    #else
+    #  #update_configmap
+    #fi

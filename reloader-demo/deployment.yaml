@@ -37,11 +37,11 @@ spec:
         - name: configmap-volume
           configMap:
             name: webcontent-cm
-            #items:
-            #- key: "welcome.html"
-            #  path: "index.html"
-            #- key: "hello.html"
-            #  path: "hello.html"
+            items:
+            - key: "welcome.html"
+              path: "index.html"
+            - key: "hello.html"
+              path: "hello.html"
         - name: nginx-config-volume
           secret:
             secretName: nginx-secret-config
