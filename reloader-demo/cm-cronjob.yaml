@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: get-cm-secret-cj
+  name: update-cm-cronjob
   namespace: demo
 spec:
   #schedule: "0 0 * * *" # Run daily at midnight
@@ -18,7 +18,7 @@ spec:
           containers:
           - image: alpine
             imagePullPolicy: IfNotPresent
-            name: get-cm-secret-cj
+            name: update-cm-cronjob
             envFrom:
               - secretRef:
                   name: splunk-secrets
@@ -27,12 +27,12 @@ spec:
             - -c
             - /shared/modify-webcontent.sh
             volumeMounts:
-              - name: get-token-volume
+              - name: script-volume
                 mountPath: "/shared/modify-webcontent.sh"
                 subPath: modify-webcontent.sh
           serviceAccountName: demo-sa
           volumes:
-            - name: get-token-volume
+            - name: script-volume
               configMap:
                 name: rotate-secret-shell-script
                 defaultMode: 0777

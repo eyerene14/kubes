@@ -2,29 +2,29 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: get-cm-secret-job
+  name: update-cm-job
   namespace: demo
 spec:
   template:
     spec:
       containers:
-      - image: alpine
-        imagePullPolicy: IfNotPresent
-        name: get-token
-        #envFrom:
-        #  - secretRef:
-        #      name: splunk-secrets
-        command:
-        - /bin/sh
-        - -c
-        - /shared/modify-webcontent.sh
-        volumeMounts:
-          - name: get-token-volume
-            mountPath: "/shared/modify-webcontent.sh"
-            subPath: modify-webcontent.sh
+        - image: alpine
+          imagePullPolicy: IfNotPresent
+          name: update-cm-job
+          #envFrom:
+          #  - secretRef:
+          #      name: splunk-secrets
+          command:
+            - /bin/sh
+            - -c
+            - /shared/modify-webcontent.sh
+          volumeMounts:
+            - name: script-volume
+              mountPath: "/shared/modify-webcontent.sh"
+              subPath: modify-webcontent.sh
       serviceAccountName: demo-sa
       volumes:
-        - name: get-token-volume
+        - name: script-volume
           configMap:
             name: rotate-secret-shell-script
             defaultMode: 0777

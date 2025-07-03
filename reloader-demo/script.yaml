@@ -12,7 +12,7 @@ data:
 
     # Execute the Bash script embedded as a heredoc
     function delay_script() {
-      COUNTER=10 # 180 = 3 minutes in seconds
+      COUNTER=3 # 180 = 3 minutes in seconds
       COUNTER=$(( $COUNTER * 60 ))
 
       echo "Starting break for $COUNTER seconds ..."
@@ -44,9 +44,6 @@ data:
 
     cm_code=$(echo $cm_response | jq -r ".code")
 
-    echo '$cm_response' keys ...:
-    echo $cm_response | jq -r '. | keys'
-
     echo Setting configMap metadata to vars ...
     metadata=$(echo $cm_response | jq '.metadata')
     createdTime=$(echo $metadata | jq -r '.creationTimestamp')
@@ -58,31 +55,15 @@ data:
     echo "Adding createdTime and updatedTime to HTML file ..."
     temp_file=$(mktemp)
     echo $cm_response | jq -r '.data' > $temp_file
-    updatedTime='2025-07-03T21:34:42Z'
-    createdTime='2025-07-03T21:58:40Z'
-    updatedTime='2025-07-03T21:58:40Z'
     sed -i 's/timeUpdatedValue\\">[^<]*</timeUpdatedValue\\">'"$updatedTime"'</g' $temp_file
     sed -i 's/timeCreatedValue\\">[^<]*</timeCreatedValue\\">'"$createdTime"'</g' $temp_file
-
     new_cm=$(cat $temp_file)
 
-    delay_script
-
-    #cm_data=$(echo $cm_response | jq -r '.data')
-    #cm_hello=$(echo $cm_data | jq -r '.["hello.html"]')
-    #updated_cm="${cm_data/timeCreatedValue\">/timeCreatedValue">"$createdTime"}"
-    #new_cm="${updated_cm/timeUpdatedValue\">/timeUpdatedValue">"$updatedTime"}"
-    #echo Setting configMap data to vars END...:
-
-    echo $new_cm | grep 'timeUpdatedValue\"><'
-
-    #payload='{"metadata": {"name": "'${SECRET_NAME}'", "namespace": "'${NAMESPACE}'"}, "data": {"sfx_auth_token": "'${encoded_token}'"}}'
-
-    if ! $(echo $new_cm | grep 'timeUpdatedValue\\">') &> /dev/null
-    then 
-      $(echo $new_cm | grep 'timeUpdatedValue')
+    if $(echo $new_cm | grep 'timeUpdatedValue\\">') &> /dev/null;then 
       echo "hello.html timeUpdatedValue was not populated" >&2
       exit 1
+    else
+      echo $new_cm | grep 'timeUpdatedValue'
     fi
 
     cm_payload='{"metadata": {"name": "'${CM_NAME}'", "namespace": "'${NAMESPACE}'"}, "data": '"${new_cm}"'}'
@@ -103,8 +84,8 @@ data:
       -d "${cm_payload}"
     }
 
-    #if [ $cm_code -eq 404 ]; then
-    #  #create_configmap
-    #else
-    #  #update_configmap
-    #fi
+    if [ $cm_code -eq 404 ]; then
+      create_configmap
+    else
+      update_configmap
+    fi

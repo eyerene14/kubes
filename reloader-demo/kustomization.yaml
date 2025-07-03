@@ -2,19 +2,15 @@ namespace: demo
 resources:
   - namespace.yaml
   - deployment.yaml
-  - sa.yaml
-  #- cm-cronjob.yaml
-  - script.yaml
-  - cm-job.yaml
-  #- pvc.yaml
   - init-cm.yaml
+  - sa.yaml
+  - cm-cronjob.yaml
+  - script.yaml
+  #- cm-job.yaml
+  #- pvc.yaml
+  
 
-# This file is used to generate ConfigMaps and Secrets for the reloader-fidget-app.
-#configMapGenerator:
-#  - name: welcomecm
-#    files:
-#      - welcome.html
-#      - hello.html
+# This is used to generate a Secret for the reloader-demo app
 secretGenerator:
   - name: nginx-secret-config
     files:
