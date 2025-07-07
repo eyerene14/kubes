@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: rotate-secret-shell-script
+  name: rotate-configmap-shell-script
   namespace: flux-system
 data:
   get-token.sh: |

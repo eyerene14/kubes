@@ -6,7 +6,10 @@ resources:
   - sa.yaml
   - script.yaml
   - cm-job.yaml
+<<<<<<< HEAD
   - cm-cronjob.yaml
+=======
+>>>>>>> 44ded3c1e0f36149840fb0715c15313bd3c04e08
   #- pvc.yaml
 
 # This is used to generate a Secret for the reloader-demo app
