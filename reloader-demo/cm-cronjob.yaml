@@ -1,3 +1,4 @@
+#  kubectl create -f cm-cronjob.yaml
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -7,8 +8,8 @@ metadata:
 spec:
   #schedule: "0 0 * * *" # Run daily at midnight
   schedule: "*/2 * * * *" # Run every 2 minutes
-  suspend: false # Set to true to stop/pause the cron job
-  concurrencyPolicy: Forbid # or Allow, Replace
+  #suspend: false # Set to true to stop/pause the cron job
+  #concurrencyPolicy: Forbid # or Allow, Replace
   # This cron job runs a job that retrieves a ConfigMap and Secret, modifies them,
   # and updates or creates them as necessary.
   jobTemplate:
@@ -19,9 +20,9 @@ spec:
           - image: alpine
             imagePullPolicy: IfNotPresent
             name: update-cm-cronjob
-            envFrom:
-              - secretRef:
-                  name: splunk-secrets
+            #envFrom:
+            #  - secretRef:
+            #      name: splunk-secrets
             command:
             - /bin/sh
             - -c
@@ -34,6 +35,6 @@ spec:
           volumes:
             - name: script-volume
               configMap:
-                name: rotate-secret-shell-script
+                name: rotate-configmap-shell-script
                 defaultMode: 0777
           restartPolicy: Never

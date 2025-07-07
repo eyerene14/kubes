@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: rotate-secret-shell-script
+  name: rotate-configmap-shell-script
   namespace: demo
 data:
   modify-webcontent.sh: |
@@ -44,8 +44,11 @@ data:
 
     cm_code=$(echo $cm_response | jq -r ".code")
 
+    echo $cm_response  | jq -r "."
+
     echo Setting configMap metadata to vars ...
     metadata=$(echo $cm_response | jq '.metadata')
+    managedFields=$(echo $metadata | jq -r '.managedFields')
     createdTime=$(echo $metadata | jq -r '.creationTimestamp')
     updatedTime=$(echo $metadata | jq -r '.managedFields[0].time')
     echo '$createdTime:' $createdTime
@@ -66,13 +69,13 @@ data:
       echo $new_cm | grep 'timeUpdatedValue'
     fi
 
-    cm_payload='{"metadata": {"name": "'${CM_NAME}'", "namespace": "'${NAMESPACE}'"}, "data": '"${new_cm}"'}'
+    cm_payload='{"metadata": {"name": "'${CM_NAME}'", "namespace": "'${NAMESPACE}'", "managedFields": '"${managedFields}"'}, "data": '"${new_cm}"'}'
 
     function create_configmap() {
       echo Creating ConfigMap: ${CM_NAME}
       curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X POST ${APISERVER}/api/v1/namespaces/${NAMESPACE}/configmaps \
       -H "Content-Type: application/json" \
-      -d "${cm_payload}"
+      -d "${1}"
     }
 
     function update_configmap() {
@@ -85,7 +88,8 @@ data:
     }
 
     if [ $cm_code -eq 404 ]; then
-      create_configmap
+      payload='{"metadata": {"name": "'${CM_NAME}'", "namespace": "'${NAMESPACE}'"}, "data": {"welcome.html": "Hello World!", "hello.html": "Hello ISK!"}}'
+      create_configmap "${payload}"
     else
       update_configmap
     fi

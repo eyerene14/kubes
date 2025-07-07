@@ -4,11 +4,10 @@ resources:
   - deployment.yaml
   - init-cm.yaml
   - sa.yaml
-  - cm-cronjob.yaml
   - script.yaml
-  #- cm-job.yaml
+  - cm-job.yaml
+  - cm-cronjob.yaml
   #- pvc.yaml
-  
 
 # This is used to generate a Secret for the reloader-demo app
 secretGenerator:

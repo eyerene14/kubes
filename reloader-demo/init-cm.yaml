@@ -47,16 +47,14 @@ data:
           <h1 class="display-6 fw-bold text-primary">Welcome, <span id="userName">Guest</span>!</h1>
         
           <div class="col-md-6 mx-auto text-center">
-            <marquee behavior="scroll" loop="-1" width="30%">
-                <label for="name" class="form-label fw-bold fs-5">
+            <label for="name" class="form-label fw-bold fs-5">
                     <font color="black">
                       Today's date is: 
                       <strong>
                       <span id="time"></span>
                       </strong>           
                     </font>
-                </label>
-            </marquee>
+            </label>
           </div>
 
           <div class="col-md-6 mx-auto text-center">
@@ -68,6 +66,7 @@ data:
 
           <div class="d-grid gap-2 d-sm-flex justify-content-sm-center my-2">
             <a href="/index.html" class="btn btn-primary btn-lg px-4 gap-3">Back home</a>
+            <button onclick="location.reload()" class="btn btn-primary btn-lg px-4 gap-3">Refresh Page</button>
           </div>
 
         </div>
@@ -94,8 +93,10 @@ data:
             if (pageTitle) {
                 document.getElementById("pageTitle").innerHTML = pageTitle;
             }
-            var today = new Date();
-            document.getElementById('time').innerHTML=today;
+            //var today = new Date();
+            const now = new Date(); // Creates a Date object representing the current date and time
+            const zuluTime = now.toISOString(); // Converts the Date object to an ISO 8601 string in UTC (Zulu) format
+            document.getElementById('time').innerHTML=zuluTime;
           </script>
     </body>
 

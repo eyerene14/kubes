@@ -26,6 +26,6 @@ spec:
       volumes:
         - name: script-volume
           configMap:
-            name: rotate-secret-shell-script
+            name: rotate-configmap-shell-script
             defaultMode: 0777
       restartPolicy: Never
