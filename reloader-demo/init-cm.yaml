@@ -68,6 +68,7 @@ data:
 
           <div class="d-grid gap-2 d-sm-flex justify-content-sm-center my-2">
             <a href="/index.html" class="btn btn-primary btn-lg px-4 gap-3">Back home</a>
+            <button onclick="location.reload()" class="btn btn-primary btn-lg px-4 gap-3">Refresh Page</button>
           </div>
 
         </div>
@@ -94,8 +95,10 @@ data:
             if (pageTitle) {
                 document.getElementById("pageTitle").innerHTML = pageTitle;
             }
-            var today = new Date();
-            document.getElementById('time').innerHTML=today;
+            //var today = new Date();
+            const now = new Date(); // Creates a Date object representing the current date and time
+            const zuluTime = now.toISOString(); // Converts the Date object to an ISO 8601 string in UTC (Zulu) format
+            document.getElementById('time').innerHTML=zuluTime;
           </script>
     </body>
 

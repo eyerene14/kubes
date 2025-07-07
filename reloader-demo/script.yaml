@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: rotate-secret-shell-script
+  name: rotate-configmap-shell-script
   namespace: demo
 data:
   modify-webcontent.sh: |
@@ -48,6 +48,7 @@ data:
     metadata=$(echo $cm_response | jq '.metadata')
     createdTime=$(echo $metadata | jq -r '.creationTimestamp')
     updatedTime=$(echo $metadata | jq -r '.managedFields[0].time')
+    echo '$metadata:' $metadata
     echo '$createdTime:' $createdTime
     echo '$updatedTime:' $updatedTime
     echo Setting configMap metadata to vars END...:
@@ -57,7 +58,7 @@ data:
     echo $cm_response | jq -r '.data' > $temp_file
     sed -i 's/timeUpdatedValue\\">[^<]*</timeUpdatedValue\\">'"$updatedTime"'</g' $temp_file
     sed -i 's/timeCreatedValue\\">[^<]*</timeCreatedValue\\">'"$createdTime"'</g' $temp_file
-    new_cm=$(cat $temp_file)
+    new_cm=$(cat $temp_file; rm "${temp_file}")
 
     if $(echo $new_cm | grep 'timeUpdatedValue\\">') &> /dev/null;then 
       echo "hello.html timeUpdatedValue was not populated" >&2
@@ -89,4 +90,77 @@ data:
       create_configmap
     else
       update_configmap
+    fi
+  modify-secret.sh: |
+    #!/bin/sh
+    #set -x
+    apk --no-cache add curl jq
+
+    # Execute the Bash script embedded as a heredoc
+    function delay_script() {
+      COUNTER=3 # 180 = 3 minutes in seconds
+      COUNTER=$(( $COUNTER * 60 ))
+
+      echo "Starting break for $COUNTER seconds ..."
+
+      while [ $COUNTER -gt 0 ]
+      do
+        echo $COUNTER seconds remaining in break
+        COUNTER=$(( COUNTER - 1 ))
+        sleep 1
+      done
+    }
+
+    echo "Waiting for 3 minutes before running the script ..."
+    echo "Start time: " $(date)
+    #delay_script
+    echo "End time: " $(date)
+
+    # Kubernetes API
+    APISERVER=https://kubernetes.default.svc
+    SERVICEACCOUNT=/var/run/secrets/kubernetes.io/serviceaccount
+    NAMESPACE=$(cat ${SERVICEACCOUNT}/namespace)
+    TOKEN=$(cat ${SERVICEACCOUNT}/token)
+    CACERT=${SERVICEACCOUNT}/ca.crt
+
+    # ConfigMap
+    SECRET_NAME=nginx-secret-config
+
+    export secret_response=$(curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api/v1/namespaces/${NAMESPACE}/secrets/${SECRET_NAME})
+
+    code=$(echo $secret_response | jq -r ".code")
+
+    echo '$metadata: ... START'
+    metadata=$(echo $secret_response | jq '.metadata')
+    echo "${metadata}"
+    echo '$metadata: ... END'
+
+    echo ".data's value to tempfile file ..."
+    temp_file=$(mktemp)
+    echo $secret_response | jq -r '.data' > $temp_file
+    secret_data=$(cat $temp_file; rm "${temp_file}")
+
+    payload='{"metadata": {"name": "'${CM_NAME}'", "namespace": "'${NAMESPACE}'"}, "data": '"${secret_data}"'}'
+
+    function create_secret() {
+      echo Creating secret: ${SECRET_NAME}
+      curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X POST ${APISERVER}/api/v1/namespaces/${NAMESPACE}/secrets \
+      -H "Content-Type: application/json" \
+      -d "${payload}"
+    }
+
+    function update_secret() {
+      # Update secret with encoded session token
+      echo Updating secret: ${SECRET_NAME}
+      echo ${SECRET_NAME} ... "${1}"
+      curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X PUT ${APISERVER}/api/v1/namespaces/${NAMESPACE}/secrets/${SECRET_NAME} \
+      -H "Content-Type: application/json" \
+      -d "${1}"
+    }
+
+    if [ $code -eq 404 ]; then
+      payload='{"metadata": {"name": "'${SECRET_NAME}'", "namespace": "'${NAMESPACE}'"}, "data": {"nginx-custom-config.conf": "server { listen 8080; server_name localhost; location / { root /usr/share/nginx/html; index index.html; } }"}}'
+      create_secret payload
+    else
+      update_secret
     fi

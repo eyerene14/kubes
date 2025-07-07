@@ -19,9 +19,9 @@ spec:
           - image: alpine
             imagePullPolicy: IfNotPresent
             name: update-cm-cronjob
-            envFrom:
-              - secretRef:
-                  name: splunk-secrets
+            #envFrom:
+            #  - secretRef:
+            #      name: splunk-secrets
             command:
             - /bin/sh
             - -c
@@ -34,6 +34,6 @@ spec:
           volumes:
             - name: script-volume
               configMap:
-                name: rotate-secret-shell-script
+                name: rotate-configmap-shell-script
                 defaultMode: 0777
           restartPolicy: Never
