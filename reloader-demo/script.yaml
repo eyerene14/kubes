@@ -85,6 +85,7 @@ data:
     }
 
     if [ $cm_code -eq 404 ]; then
+      cm_payload='{"metadata": {"name": "'${CM_NAME}'", "namespace": "'${NAMESPACE}'"}, "data": {"welcome.html": "Hello World!", "hello.html": "Hello ISK!"}}'
       create_configmap
     else
       update_configmap

@@ -6,7 +6,7 @@ resources:
   - sa.yaml
   - cm-cronjob.yaml
   - script.yaml
-  #- cm-job.yaml
+  - cm-job.yaml
   #- pvc.yaml
   
 
