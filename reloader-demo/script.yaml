@@ -48,9 +48,10 @@ data:
 
     echo Setting configMap metadata to vars ...
     metadata=$(echo $cm_response | jq '.metadata')
-    managedFields=$(echo $metadata | jq -r '.managedFields')
+    annotations=$(echo $metadata | jq '.annotations')
+    #managedFields=$(echo '{"managedFields":{"manager": "kubectl-client-side-apply","operation": "Update", "apiVersion": "v1","fieldsType": "FieldsV1", "fieldsV1": { "f:data": {"f:hello.html": {}, "f:welcome.html": {}} }}}' | jq '.')
     createdTime=$(echo $metadata | jq -r '.creationTimestamp')
-    updatedTime=$(echo $metadata | jq -r '.managedFields[0].time')
+    updatedTime=$(echo $metadata | jq -r 'if .managedFields[1]? then .managedFields[1].time else .managedFields[0].time end' )
     echo '$metadata:' $metadata
     echo '$createdTime:' $createdTime
     echo '$updatedTime:' $updatedTime
@@ -70,7 +71,7 @@ data:
       echo $new_cm | grep 'timeUpdatedValue'
     fi
 
-    cm_payload='{"metadata": {"name": "'${CM_NAME}'", "namespace": "'${NAMESPACE}'", "managedFields": '"${managedFields}"'}, "data": '"${new_cm}"'}'
+    cm_payload='{"metadata": {"name": "'${CM_NAME}'", "namespace": "'${NAMESPACE}'", "annotations": {"kubectl.kubernetes.io/last-applied-configuration":""}}, "data": '"${new_cm}"'}'
 
     function create_configmap() {
       echo Creating ConfigMap: ${CM_NAME}

@@ -5,7 +5,7 @@ resources:
   - init-cm.yaml
   - sa.yaml
   - script.yaml
-  - cm-job.yaml
+  #- cm-job.yaml
   - cm-cronjob.yaml
   #- pvc.yaml
 

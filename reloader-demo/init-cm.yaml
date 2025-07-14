@@ -106,3 +106,5 @@ metadata:
   creationTimestamp: null
   name: webcontent-cm
   namespace: demo
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: ""
