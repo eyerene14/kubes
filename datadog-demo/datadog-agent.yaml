@@ -1,0 +1,41 @@
+#source: https://starbucks.datadoghq.com/fleet/install-agent/latest?
+kind: "DatadogAgent"
+apiVersion: "datadoghq.com/v2alpha1"
+metadata:
+  name: "datadog"
+  namespace: "datadog-demo"
+spec:
+  global:
+    site: "datadoghq.com"
+    credentials:
+      apiSecret:
+        secretName: "datadog-secret"
+        keyName: "api-key"
+  features:
+    apm:
+      instrumentation:
+        enabled: true
+        targets:
+          - name: "default-target"
+            ddTraceVersions:
+              java: "1"
+              python: "3"
+              js: "5"
+              php: "1"
+              dotnet: "3"
+    logCollection:
+      enabled: true
+      containerCollectAll: true
+    usm:
+      enabled: true
+    npm:
+      enabled: true
+    liveProcessCollection:
+      enabled: true
+  override:
+    clusterAgent:
+      containers:
+        cluster-agent:
+          env:
+            - name: "DD_ADMISSION_CONTROLLER_ADD_AKS_SELECTORS"
+              value: "true"
