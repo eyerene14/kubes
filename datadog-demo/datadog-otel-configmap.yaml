@@ -1,48 +1,8 @@
-# source: https://docs.datadoghq.com/opentelemetry/setup/ddot_collector/install/?tab=datadogoperator
-kind: "DatadogAgent"
-apiVersion: "datadoghq.com/v2alpha1"
-metadata:
-  name: "datadog"
-  namespace: "ij-datadog-demo"
-  annotations:
-    reloader.stakater.com/auto: "true"
-spec:
-  global:
-    clusterName: "ij-demo-cluster"
-    site: "datadoghq.com"
-    credentials:
-      apiSecret:
-        secretName: "datadog-secret"
-        keyName: "api-key"
-    tags:
-      - "env:rie"
-  override:
-    clusterAgent:
-      containers:
-        cluster-agent:
-          env:
-            - name: "DD_ADMISSION_CONTROLLER_ADD_AKS_SELECTORS"
-              value: "true"
-  # Enable Features
-  features:
-    otelCollector:
-      enabled: true
-      ports:
-        - containerPort: 4317
-          hostPort: 4317
-          name: otel-grpc
-        - containerPort: 4318
-          hostPort: 4318
-          name: otel-http
-      conf:
-        configMap:
-          name: otel-agent-config-map
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: otel-agent-config-map
-  namespace: ij-datadog-demo
+  namespace: "ij-datadog-demo"
 data:
   # must be named otel-config.yaml
   otel-config.yaml: |-
@@ -89,4 +49,4 @@ data:
         logs:
           receivers: [otlp]
           processors: [infraattributes, batch]
-          exporters: [debug, datadog]
+          exporters: [debug, datadog]    
