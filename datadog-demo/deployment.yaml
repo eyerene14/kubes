@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    tags.datadoghq.com/env: "<ENV>"
+    tags.datadoghq.com/service: "<SERVICE>"
+    tags.datadoghq.com/version: "<VERSION>"
+  name: opentelemetry-examples
+spec:
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s-app: opentelemetry-examples
+      name: opentelemetry-examples
+    spec:
+      containers:
+      - image: datadog/opentelemetry-examples:calendar-java-20240916
+        name: opentelemetry-examples
+template:
+  metadata:
+    labels:
+      tags.datadoghq.com/env: "<ENV>"
+      tags.datadoghq.com/service: "<SERVICE>"
+      tags.datadoghq.com/version: "<VERSION>"
+  containers:
+  -  
+  
+     env:
+      - name: OTEL_SERVICE_NAME
+        value: "<SERVICE>"
+      - name: OTEL_RESOURCE_ATTRIBUTES
+        value: >-
+          service.name=$(OTEL_SERVICE_NAME),
+          service.version=<VERSION>,
+          deployment.environment.name=<ENV>          

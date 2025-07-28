@@ -8,3 +8,4 @@ configMapGenerator:
     - testcm=testcmValue
 resources:
   - deployment.yaml
+  - namespace.yaml
