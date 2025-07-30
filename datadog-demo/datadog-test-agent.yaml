@@ -94,3 +94,9 @@ data:
           receivers: [otlp]
           processors: [infraattributes, batch]
           exporters: [debug, datadog]
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: "ij-datadog-demo"
+...
