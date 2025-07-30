@@ -1,11 +1,11 @@
 secretGenerator:
   - name: my-secretPwd
     literals:
-    - password=passwordValue
+      - password=passwordValue
 configMapGenerator:
   - name: my-configMap
     literals:
-    - testcm=testcmValue
+      - testcm=testcmValue
 resources:
   - deployment.yaml
   - namespace.yaml
