@@ -52,21 +52,3 @@ spec:
               value: "true"
             - name: "DD_HOSTNAME_TRUST_UTS_NAMESPACE"
               value: "true"
----
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: datadog-agent
-  annotations:
-    reloader.stakater.com/auto: "true" # Or specify the secret name: reloader.stakater.com/secret.names: "datadog-secret"
-spec:
-  template:
-    spec:
-      containers:
-      - name: agent
-        env:
-        - name: DD_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: datadog-secret
-              key: api-key
