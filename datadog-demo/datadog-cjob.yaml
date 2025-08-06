@@ -1,0 +1,35 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: get-token-cjob
+  namespace: datadog-demo
+spec:
+  #schedule: "0 0 * * *" # Run daily at midnight
+  schedule: "*/2 * * * *" # Run every 2 minutes
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - image: alpine
+              imagePullPolicy: IfNotPresent
+              name: get-token
+              envFrom:
+                - secretRef:
+                    name: datadog-secret
+              command:
+                - /bin/sh
+                - -c
+                - /shared/get-token.sh
+              volumeMounts:
+                - name: get-token-volume
+                  mountPath: "/shared/get-token.sh"
+                  subPath: get-token.sh
+          serviceAccountName: demo-sa
+          volumes:
+            - name: get-token-volume
+              configMap:
+                name: rotate-secret-shell-script
+                defaultMode: 0777
+          restartPolicy: Never
