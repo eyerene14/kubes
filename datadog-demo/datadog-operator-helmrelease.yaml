@@ -13,4 +13,14 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: datadog-chart
-        namespace: flux-system
+        namespace: datadog-demo
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: HelmRepository
+metadata:
+  name: datadog-chart
+  namespace: datadog-demo
+spec:
+  interval: 30m
+  url: https://helm.datadoghq.com
+  timeout: 2m

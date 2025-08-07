@@ -4,13 +4,12 @@ metadata:
   name: datadog-agent
   namespace: datadog-demo
 spec:
-  revisionHistoryLimit: 10
-  selector:
-    matchLabels:
-      reloader-enabled: "true"
+  #selector:
+    #matchLabels:
+      #reloader.stakater.com/auto: "true"
   template:
     metadata:
-      labels:
-        reloader-enabled: "true"
+      #labels:
+        #reloader.stakater.com/auto: "true"
       annotations:
-        reloader.stakater.com/auto: true
+        reloader.stakater.com/auto: "true"
