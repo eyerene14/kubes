@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: datadog-agent
+  namespace: datadog-demo
+spec:
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      reloader-enabled: "true"
+  template:
+    metadata:
+      labels:
+        reloader-enabled: "true"
+      annotations:
+        reloader.stakater.com/auto: true

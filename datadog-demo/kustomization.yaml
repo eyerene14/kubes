@@ -1,7 +1,7 @@
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: datadog-demo
+#namespace: datadog-demo
 resources:
   #- namespace.yaml
   - datadog-operator-helmrelease.yaml
@@ -9,11 +9,26 @@ resources:
   - script.yaml
   - sa.yaml
   - datadog-cjob.yaml
+#Customizing patches: https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/#customizing
 patches:
   - target:
-      kind: Deployment
+      kind: Pods
+      namespace: datadog-demo
     patch: |-
-      - op: add
+      - op: add   
+        path: '/metadata/annotations'
+        value: 
+          reloader.stakater.com/auto: true
+  - target:
+      kind: DaemonSet
+      name: datadog-agent
+      namespace: datadog-demo
+    path: datadog-ds-patch.yaml
+  - target:
+      kind: Deployment
+      namespace: datadog-demo
+    patch: |-
+      - op: add   
         path: '/spec/template/metadata/annotations'
         value: 
           reloader.stakater.com/auto: true
