@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kustomize.config.k8s.io/behavior: "merge"
+    reloader.stakater.com/auto: "true"
+  namespace: datadog-demo
+  name: datadog-cluster-agent
+spec:
+  template:
+    metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"

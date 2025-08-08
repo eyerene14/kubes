@@ -1,0 +1,18 @@
+# $RECAPTCHA/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+resources:
+  - datadog-patches.yaml
+  - datadog-dply-patch.yaml
+#Customizing patches: https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/#customizing
+patches:
+- path: datadog-patches.yaml
+  target:
+    kind: DaemonSet
+    name: datadog-agent
+    namespace: datadog-demo
+- path: datadog-dply-patch.yaml
+  target:
+    kind: Deployment
+    namespace: datadog-demo
+    name: datadog-cluster-agent

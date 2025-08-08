@@ -1,15 +1,13 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
+  annotations:
+    kustomize.config.k8s.io/behavior: "merge"
+    reloader.stakater.com/auto: "true"
   name: datadog-agent
   namespace: datadog-demo
 spec:
-  #selector:
-    #matchLabels:
-      #reloader.stakater.com/auto: "true"
   template:
     metadata:
-      #labels:
-        #reloader.stakater.com/auto: "true"
       annotations:
         reloader.stakater.com/auto: "true"

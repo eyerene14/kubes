@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  namespace: datadog-demo
+spec:
+  template:
+    metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  name: datadog-agent
+  namespace: datadog-demo
+spec:
+  template:
+    metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"

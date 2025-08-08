@@ -6,17 +6,26 @@ resources:
   #- namespace.yaml
   #- datadog-operator-helmrelease.yaml
   - datadog-agent.yaml
-  - script.yaml
-  - sa.yaml
+  #- script.yaml
+  #- sa.yaml
   #- datadog-cjob.yaml
-#Customizing patches: https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/#customizing
+
+commonAnnotations:
+  reloader.stakater.com/auto: "true"
 patches:
-  - path: ./datadog-ds-patch.yaml
-  #- target:
-  #    kind: Deployment
-  #    namespace: datadog-demo
-  #  patch: |-
-  #    - op: add
-  #      path: '/spec/template/metadata/annotations'
-  #      value:
-  #        reloader.stakater.com/auto: "true"
+- target:
+    kind: Deployment
+  patch: |-
+    - op: add
+      path: /metadata/annotations
+      value: 
+        'reloader.stakater.com/auto': "true"
+- target:
+    kind: DaemonSet
+  patch: |-
+    - op: add
+      path: /spec/template/metadata/annotations
+      value:
+        'reloader.stakater.com/auto': "true"
+#components:
+  #- ./components
