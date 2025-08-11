@@ -2,30 +2,37 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: datadog-demo
+labels:
+  - pairs:
+      agent.datadoghq.com/name: datadog
+    includeSelectors: true 
+commonAnnotations:
+  reloader.stakater.com/auto: "true"
 resources:
   #- namespace.yaml
   #- datadog-operator-helmrelease.yaml
   - datadog-agent.yaml
-  #- script.yaml
-  #- sa.yaml
-  #- datadog-cjob.yaml
-
-commonAnnotations:
-  reloader.stakater.com/auto: "true"
+  - script.yaml
+  - sa.yaml
+  - datadog-job.yaml
+  - datadog-cjob.yaml
+  #- datadog-patches.yaml
 patches:
-- target:
-    kind: Deployment
-  patch: |-
-    - op: add
-      path: /metadata/annotations
-      value: 
-        'reloader.stakater.com/auto': "true"
-- target:
+- path: datadog-patches.yaml
+  target:
     kind: DaemonSet
-  patch: |-
-    - op: add
-      path: /spec/template/metadata/annotations
-      value:
-        'reloader.stakater.com/auto': "true"
+    namespace: datadog-demo
+replacements:
+- source:
+    kind: Job
+    namespace: datadog-demo
+    fieldPath: metadata.annotations
+  targets:
+  - select:
+      kind: Deployments
+      namespace: datadog-demo
+    fieldPaths:
+    - spec.template.metadata.annotations
+
 #components:
-  #- ./components
+#  - ./components

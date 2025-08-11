@@ -8,7 +8,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   namespace: datadog-demo
-  name: admin-role
+  name: demo-role
 rules:
   - apiGroups: [""]
     resources:
@@ -18,10 +18,15 @@ rules:
         "persistentvolumeclaims",
         "secrets",
         "services",
+        "deployments",
+        "daemonsets",
+        "statefulsets",
+        "replicasets",
+        "namespaces",
       ]
     verbs: ["*"]
   - apiGroups: ["apps"]
-    resources: ["deployments", "daemonsets", "statefulsets"]
+    resources: ["deployments", "daemonsets", "statefulsets", "namespaces"]
     verbs: ["*"]
   - apiGroups: ["batch"]
     resources: ["cronjobs", "jobs"]
@@ -47,11 +52,11 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: admin-role
+  name: demo-role
 subjects:
   - kind: ServiceAccount
     name: demo-admin
-    namespace: flux-system
+    namespace: datadog-demo
   - kind: ServiceAccount
     name: demo-sa
     namespace: datadog-demo

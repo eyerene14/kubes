@@ -1,0 +1,64 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: datadog-demo-job
+  namespace: datadog-demo
+spec:
+  selector:
+    matchLabels:
+      agent.datadoghq.com/name: datadog
+  template:
+    metadata:
+      labels:
+        agent.datadoghq.com/name: datadog
+    spec:
+      containers:
+        - image: alpine
+          imagePullPolicy: IfNotPresent
+          name: datadog-cm-job
+          command:
+            - /bin/sh
+            - -c
+            - /shared/call-api-script.sh
+          volumeMounts:
+            - name: script-volume
+              mountPath: "/shared/call-api-script.sh"
+              subPath: call-api-script.sh
+      serviceAccountName: demo-sa
+      volumes:
+        - name: script-volume
+          configMap:
+            name: cm-shell-script
+            defaultMode: 0777
+      restartPolicy: Never
+---
+#source: https://scm.starbucks.com/retail-infrastructure-engineering/taas-flux/blob/main/archive/terraform/base/tf-retail-network/script.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-shell-script
+  namespace: datadog-demo
+data:
+  call-api-script.sh: |
+    #set -x
+    apk --no-cache add curl jq
+
+    # Kubernetes API
+    APISERVER=https://kubernetes.default.svc
+    SERVICEACCOUNT=/var/run/secrets/kubernetes.io/serviceaccount
+    NAMESPACE=$(cat ${SERVICEACCOUNT}/namespace)
+    TOKEN=$(cat ${SERVICEACCOUNT}/token)
+    CACERT=${SERVICEACCOUNT}/ca.crt
+    # Datadog api-key & app-key
+    SECRET_NAME=datadog-secret
+
+    #response=$(curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api/v1/namespaces/${NAMESPACE}/)
+    echo 'curl -s --cacert '"${CACERT}"' --header "Authorization: Bearer '"${TOKEN}"'" -X GET ${APISERVER}/api/v1/' > get_token.sh
+
+    # Retrieve resources from Kubernetes
+    response=$(curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api/v1/)
+    all_response=$(echo $response | jq -r '.')
+    echo '$all_response: '; echo $all_response | jq '.'
+
+    sleep 500

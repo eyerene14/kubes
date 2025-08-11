@@ -7,7 +7,14 @@ metadata:
   namespace: datadog-demo
   name: datadog-cluster-agent
 spec:
+  selector:
+    matchLabels:
+      agent.datadoghq.com/component: agent
+      agent.datadoghq.com/name: datadog
   template:
     metadata:
       annotations:
         reloader.stakater.com/auto: "true"
+      matchLabels:
+        agent.datadoghq.com/component: agent
+        agent.datadoghq.com/name: datadog

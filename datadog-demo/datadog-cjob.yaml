@@ -7,6 +7,9 @@ metadata:
 spec:
   #schedule: "0 0 * * *" # Run daily at midnight
   schedule: "*/2 * * * *" # Run every 2 minutes
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: "Replace"
   jobTemplate:
     spec:
       template:
