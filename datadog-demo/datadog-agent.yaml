@@ -3,8 +3,6 @@ apiVersion: "datadoghq.com/v2alpha1"
 metadata:
   name: "datadog"
   namespace: "datadog-demo"
-  annotations:
-    reloader.stakater.com/auto: "true"
 spec:
   global:
     clusterName: "ij-demo-cluster"

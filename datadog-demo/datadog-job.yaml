@@ -5,13 +5,7 @@ metadata:
   name: datadog-demo-job
   namespace: datadog-demo
 spec:
-  selector:
-    matchLabels:
-      agent.datadoghq.com/name: datadog
   template:
-    metadata:
-      labels:
-        agent.datadoghq.com/name: datadog
     spec:
       containers:
         - image: alpine

@@ -9,3 +9,4 @@ configMapGenerator:
 resources:
   - deployment.yaml
   - namespace.yaml
+  - job.yaml

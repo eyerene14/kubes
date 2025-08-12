@@ -16,8 +16,7 @@ data:
     NAMESPACE=$(cat ${SERVICEACCOUNT}/namespace)
     TOKEN=$(cat ${SERVICEACCOUNT}/token)
     CACERT=${SERVICEACCOUNT}/ca.crt
-    # Datadog api-key & app-key
-    SECRET_NAME=datadog-secret
+    DEPLOYMENT_NAME=datadog-cluster-agent
 
     #response=$(curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api/v1/namespaces/${NAMESPACE}/)
     echo curl -s --cacert '"${CACERT}"' --header "Authorization: Bearer '"${TOKEN}"'" -X GET ${APISERVER}/api/v1/ > get_token.sh
@@ -31,15 +30,24 @@ data:
     #echo '$all_response: '; echo $all_response | jq '.'
     echo '$all_response: '; echo $all_response | jq '.' > all_response
 
-    # Retrieve daemonsets from Kubernetes
-    daemonset_response=$(curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api/v1/daemonsets/datadog-agent)
-    ds_response=$(echo $daemonset_response | jq -r '.')
-    echo '$ds_response: '; echo $ds_response | jq '.'
 
     # Retrieve deployments from Kubernetes
-    deployments_response=$(curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api/v1/deployments/datadog-cluster-agent)
+    deployments_response=$(curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api/v1/namespaces/${NAMESPACE}/deployments/${DEPLOYMENT_NAME})
     dply_response=$(echo $deployments_response | jq -r '.')
     echo '$dply_response: '; echo $dply_response | jq '.'
 
+    dply_response=$(echo $deployments_response | jq -r '.')
+    code=$(echo $dply_response | jq -r ".code")
+    echo '$code: ' $code
+
+    payload='{"metadata": {"name": "'${DEPLOYMENT_NAME}'", "namespace": "'${NAMESPACE}'", "annotations": {"reloader.stakater.com/auto":"true"}}}'
+
+    if [ $code -eq 404 ]; then
+      # Update secret with encoded session token
+      echo Updating deployment
+      curl -s --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X PUT ${APISERVER}/api/v1/namespaces/${NAMESPACE}/deployments/${DEPLOYMENT_NAME} \
+      -H "Content-Type: application/json" \
+      -d "${payload}"
+    fi
 
     sleep 600

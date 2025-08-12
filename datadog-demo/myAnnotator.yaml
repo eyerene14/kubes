@@ -1,0 +1,13 @@
+apiVersion: builtin
+kind: AnnotationsTransformer
+metadata:
+  name: notImportantHere
+annotations:
+  'reloader.stakater.com\/auto': "true"
+fieldSpecs:
+- kind: Deployment
+  path: spec/template/metadata/annotations
+  create: true
+- kind: DaemonSet
+  path: spec/template/metadata/annotations
+  create: true

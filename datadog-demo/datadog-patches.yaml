@@ -1,12 +1,15 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  annotations:
-    reloader.stakater.com/auto: "true"
-  namespace: datadog-demo
   name: datadog-agent
+  namespace: datadog-demo
 spec:
+  selector:
+    matchLabels:
+      agent.datadoghq.com/component: cluster-agent
   template:
     metadata:
       annotations:
         reloader.stakater.com/auto: "true"
+      labels:
+        agent.datadoghq.com/component: cluster-agent

@@ -1,18 +1,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    reloader.stakater.com/auto: "true"
   name: datadog-cluster-agent
-  labels:
-    app: datadog
+  namespace: datadog-demo
 spec:
   selector:
     matchLabels:
-      app: datadog
+      agent.datadoghq.com/component: cluster-agent
   template:
     metadata:
       annotations:
         reloader.stakater.com/auto: "true"
       labels:
-        app: datadog
+        agent.datadoghq.com/component: cluster-agent
