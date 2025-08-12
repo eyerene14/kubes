@@ -1,15 +1,28 @@
 #source: https://kubectl.docs.kubernetes.io/guides/config_management/components/
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
+#labels:
+#  - pairs:
+#      agent.datadoghq.com/name: datadog
+#    includeSelectors: true 
+commonAnnotations:
+  reloader.stakater.com/auto: "true"
 resources:
   - datadog-patches.yaml
   - datadog-dply-patch.yaml
-patches:
-- path: ./datadog-patches.yaml
+patches:  
+- path: datadog-patches.yaml
   target:
-    kind: DaemonSet
-    namespace: datadog-demo
-- path: ./datadog-dply-patch.yaml
+    group: apps/v1
+    labelSelector: "agent.datadoghq.com/name=datadog"
+- path: datadog-dply-patch.yaml
   target:
-    kind: Deployment
-    namespace: datadog-demo
+    group: apps/v1
+    labelSelector: "agent.datadoghq.com/name=datadog"
+- patch: |-
+    - op: add
+      path: '/spec/template/metadata/annotations'
+      value: reloader.stakater.com/auto="true"
+  target:
+    group: apps/v1
+    labelSelector: "agent.datadoghq.com/name=datadog"

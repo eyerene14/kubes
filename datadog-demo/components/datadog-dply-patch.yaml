@@ -4,15 +4,16 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
   name: datadog-cluster-agent
+  namespace: datadog-demo
   labels:
-    app: datadog
+    agent.datadoghq.com/name: datadog
 spec:
   selector:
     matchLabels:
-      app: datadog
+      agent.datadoghq.com/name: datadog
   template:
     metadata:
       annotations:
         reloader.stakater.com/auto: "true"
       labels:
-        app: datadog
+        agent.datadoghq.com/name: datadog

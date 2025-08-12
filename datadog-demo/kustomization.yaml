@@ -2,28 +2,17 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: datadog-demo
 resources:
-- datadog-agent.yaml
-- datadog-wrong-secret.enc.yaml
+  - datadog-agent.yaml
+  - datadog-wrong-secret.enc.yaml
 #Customizing patches: https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/#customizing
-labels:
-  - pairs:
-      app: datadog
-    includeSelectors: true 
-commonAnnotations:
-  reloader.stakater.com/auto: "true"
-patches:
-- patch: |-
-    - op: add
-      path: '/spec/template/metadata/annotations/reloader.stakater.com~1auto'
-      value: true
-  target:
-    group: apps
-    kind: Deployment
-- path: datadog-patches.yaml
-  target:
-    kind: "DaemonSet"
-     #name: datadog-agent
-     #namespace: datadog-demo
-
+#patches:
+#- patch: |-
+#    - op: add
+#      path: '/spec/template/metadata/annotations'
+#      value: reloader.stakater.com/auto="true"
+#  target:
+#    group: apps/v1
+#    labelSelector: "agent.datadoghq.com/name=datadog"
 components:
- - ./components
+  - ./components
+  
