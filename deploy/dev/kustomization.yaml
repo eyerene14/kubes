@@ -1,0 +1,14 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+nameSuffix: -dev
+namespace: test-deploy-dev
+resources: ["./deployment.yaml"]
+
+configMapGenerator:
+- name: test-cm
+  literals:
+  - testcm=testcmValue
+
+generatorOptions:
+  disableNameSuffixHash: true
