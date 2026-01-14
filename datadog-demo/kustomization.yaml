@@ -13,6 +13,14 @@ resources:
 #  target:
 #    group: apps/v1
 #    labelSelector: "agent.datadoghq.com/name=datadog"
+patches:
+- patch: |-
+    - op: add
+      path: '/spec/template/metadata/annotations'
+      value: reloader.stakater.com/auto="true"
+  target:
+    group: apps/v1
+    labelSelector: "agent.datadoghq.com/name=datadog"
 components:
-  - ./components
+  - components
   

@@ -16,4 +16,4 @@ spec:
       annotations:
         reloader.stakater.com/auto: "true"
       labels:
-        agent.datadoghq.com/name: datadog
+        agent.datadoghq.com/component: "cluster-agent"
